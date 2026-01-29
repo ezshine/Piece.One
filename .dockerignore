@@ -1,0 +1,7 @@
+.git
+node_modules
+vendor
+front-end/node_modules
+front-end/dist
+*.log
+.DS_Store

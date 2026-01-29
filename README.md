@@ -19,3 +19,24 @@ And connection doesn’t have to be serious to be real.
 
 So we drop emojis, not bombs.
 And we let the world react.
+
+# Tech Stack
+
+	-   PHP 8.2
+	-   MongoDB
+	-   Redis
+	-   Nginx
+	-   PHP-FPM
+	-   Composer
+	-   Workerman
+	-   Node.js
+	-   npm
+
+# Deployment
+
+> copy the .env.example to .env and fill in the values
+
+> docker-compose up -d --build
+
+> open http://127.0.0.1:3000
+

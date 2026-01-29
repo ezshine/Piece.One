@@ -1,0 +1,8 @@
+.DS_Store
+/vendor/
+*.log
+*.pid
+Applications/web
+node_modules
+front-end
+.env

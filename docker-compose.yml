@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: pieceone_redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  mongodb:
+    image: mongo:latest
+    container_name: pieceone_mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build:
+      context: .
+      args:
+        - WS_SERVER=${WS_SERVER}
+        - API_SERVER=${API_SERVER}
+        - RUN_ENV=${RUN_ENV}
+    container_name: pieceone_server
+    ports:
+      - "8282:8282"  # WebSocket Port
+      - "8383:8383"  # HTTP Web Port
+      - "3000:3000"  # Static Web Port
+    environment:
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - LAND_BASE_PRICE=${LAND_BASE_PRICE}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=${MONGO_URI}
+      - WALLET_ENCRYPTION_KEY=${WALLET_ENCRYPTION_KEY}
+    depends_on:
+      - redis
+      - mongodb
+    restart: always
+    tty: true
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    sysctls:
+      net.core.somaxconn: 65535
+
+volumes:
+  redis_data:
+  mongo_data:
