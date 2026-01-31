@@ -41,7 +41,7 @@ services:
       - MONGO_URI=${MONGO_URI}
       - WALLET_ENCRYPTION_KEY=${WALLET_ENCRYPTION_KEY}
       - SILLICONFLOW_KEY=${SILLICONFLOW_KEY}
-      - BSC_RPC_URL=${BSC_RPC_URL}
+      - BASE_RPC_URL=${BASE_RPC_URL}
     depends_on:
       - redis
       - mongodb

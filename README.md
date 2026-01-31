@@ -38,7 +38,7 @@ graph TD
     Svr[Backend - PHP Workerman]
     DB[(MongoDB - Persistence)]
     Cache[(Redis - Real-time State)]
-    Chain{Blockchain - BSC/EVM}
+    Chain{Blockchain - Base L2}
 
     User <--> Web
     Web <--> Svr
@@ -64,7 +64,7 @@ graph TD
 - **Database**: MongoDB, Redis
 - **Infrastructure**: Nginx, PHP-FPM, Docker
 - **Frontend**: Vanilla JS, Zepto.js, GSAP (Animations), Tone.js (Audio)
-- **Blockchain**: EVM Compatible (Binance Smart Chain)
+- **Blockchain**: EVM Compatible (Base - Ethereum L2)
 
 ---
 
