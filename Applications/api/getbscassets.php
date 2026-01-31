@@ -1,6 +1,8 @@
 <?php
 /**
  * getbscassets.php - Proxy for BscScan Token Holdings
+ * 
+ * Supports filtering to only return standard/safe tokens (no tax tokens)
  */
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -13,6 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['errcode' => 1, 'errmsg' => 'Only POST method is allowed']);
     return;
 }
+
+// Standard tokens whitelist (known safe tokens without transfer restrictions)
+// These are well-known stablecoins and major tokens on BSC
+$STANDARD_TOKENS = [
+    '0x55d398326f99059ff775485246999027b3197955' => 'USDT',    // Binance-Peg BSC-USD
+    '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d' => 'USDC',    // Binance-Peg USD Coin
+    '0xe9e7cea3dedca5984780bafc599bd69add087d56' => 'BUSD',    // Binance USD
+    '0x2170ed0880ac9a755fd29b2688956bd959f933f8' => 'ETH',     // Binance-Peg Ethereum
+    '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c' => 'BTCB',    // Binance-Peg BTCB
+    '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c' => 'WBNB',    // Wrapped BNB
+    '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3' => 'DAI',     // Binance-Peg Dai
+    '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d' => 'USD1',    // USD1 Stablecoin
+    // Add more standard tokens as needed
+];
 
 // Get input
 $input = '';
@@ -30,6 +46,7 @@ if (empty($input)) {
 
 $data = json_decode($input, true);
 $address = isset($data['address']) ? $data['address'] : '';
+$onlyStandard = isset($data['onlyStandard']) ? (bool)$data['onlyStandard'] : true; // Default to only standard tokens
 
 if (empty($address) || !preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
     echo json_encode(['errcode' => 2, 'errmsg' => 'Invalid address']);
@@ -149,11 +166,20 @@ if (isset($json['d'])) {
             $balance = str_replace(',', '', $item['Balance']);
         }
 
+        // 5. Filter by whitelist if onlyStandard is enabled
+        $contractLower = strtolower($contract);
+        $isStandard = isset($STANDARD_TOKENS[$contractLower]);
+        
+        if ($onlyStandard && !$isStandard) {
+            continue; // Skip non-standard tokens
+        }
+
         $simplifiedList[] = [
             'symbol' => $symbol,
             'balance' => $balance,
             'contract' => $contract,
-            'decimals' => $decimals
+            'decimals' => $decimals,
+            'isStandard' => $isStandard
         ];
     }
 
